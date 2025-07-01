@@ -48,13 +48,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG_DATE="${{ steps.get-latest-tag.outputs.tag_date }}"
-          PR_LIST=$(gh pr list --search "merged:>$TAG_DATE" --state merged --json number,title,body,mergedAt,url -L 100)
+          PR_LIST=$(gh pr list --search "merged:>$TAG_DATE" --state merged --json number,title,body,mergedAt,url,author -L 100)
           PR_COUNT=$(echo "$PR_LIST" | jq '. | length')
           if [ "$PR_COUNT" -eq 0 ]; then
             echo "No PRs found since last tag."
             exit 1
           fi
-          PR_SUMMARY=$(echo "$PR_LIST" | jq -r '.[] | "PR #\(.number): \(.title)\nMerged At: \(.mergedAt)\nURL: \(.url)\nDescription: \(.body)\n---\n"')
+          PR_SUMMARY=$(echo "$PR_LIST" | jq -r '.[] | "PR #\(.number): \(.title)\nAuthor: @\(.author.login)\nMerged At: \(.mergedAt)\nURL: \(.url)\nDescription: \(.body)\n---\n"')
           {
             echo 'PR_SUMMARY<<EOF'
             echo "$PR_SUMMARY"
@@ -131,13 +131,34 @@ jobs:
           NEW_VERSION="${{ steps.generate-version.outputs.new_version }}"
 
           cat > prompt.txt <<EOL
-          You are a technical writer creating release notes. Summarize the following PRs into a well-structured release note for version ${NEW_VERSION}.
+          You are a technical writer creating release notes. Summarize the following PRs into a well-structured release note.
 
           PRs merged since last release:
 
           ${PR_SUMMARY}
 
-          Group changes by type (Features, Bug Fixes, Documentation, etc.) and provide a clean, professional summary in Markdown.
+          Requirements:
+          - Do NOT include any version title or heading (like "# Release Notes - v1.4.0")
+          - Group changes into exactly these 4 categories only: Features, Bug Fixes, Enhancements, Documentation
+          - For each item, include the PR author's GitHub username with @ prefix (e.g., "by @username")
+          - If multiple contributors are involved in a PR, list them comma-separated (e.g., "by @user1, @user2")
+          - Use bullet points for each item
+          - Keep descriptions concise and professional
+          - Only include categories that have actual changes
+
+          Format example:
+          ## Features
+          - Added new feature X by @username
+          - Implemented Y functionality by @user1, @user2
+
+          ## Bug Fixes
+          - Fixed issue with Z by @username
+
+          ## Enhancements
+          - Improved performance of A by @username
+
+          ## Documentation
+          - Updated README by @username
           EOL
 
           REQ=$(cat prompt.txt | jq -Rs '{anthropic_version:"bedrock-2023-05-31",max_tokens:4000,messages:[{role:"user",content:.}]}')

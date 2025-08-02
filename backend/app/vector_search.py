@@ -83,16 +83,49 @@ def _bedrock_knowledge_base_search(bot: BotModel, query: str) -> list[SearchResu
     )
 
     try:
-        response = agent_client.retrieve(
-            knowledgeBaseId=knowledge_base_id,
-            retrievalQuery={"text": query},
-            retrievalConfiguration={
+        # Init retrieve parameter
+        retrieve_parameter = {
+            "knowledgeBaseId": knowledge_base_id,
+            "retrievalQuery": {"text": query},
+            "retrievalConfiguration": {
                 "vectorSearchConfiguration": {
                     "numberOfResults": limit,
                     "overrideSearchType": search_type,
                 }
             },
-        )
+        }
+
+        # Omit overrideSearchType parameter if needed
+        def omit_override_search_type_parameter(retrieve_parameter: dict):
+            keys = [
+                "retrievalConfiguration",
+                "vectorSearchConfiguration",
+            ]
+            target_parameter = retrieve_parameter
+            for key in keys:
+                target_parameter = target_parameter.get(key, {})
+            # If overrideSearchType exists, remove it
+            if "overrideSearchType" in target_parameter:
+                del target_parameter["overrideSearchType"]
+
+        # Check the knowledge base resource type
+        if bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type == "KENDRA":
+            # Omit overrideSearchType option when the type is "KENDRA"
+            omit_override_search_type_parameter(retrieve_parameter)
+
+        try:
+            # Send retrieve request
+            response = agent_client.retrieve(**retrieve_parameter)
+        except ClientError as e:
+            # If error message contains "kendra"
+            if "kendra" in f"{e}".lower():
+                # Omit overrideSearchType option
+                omit_override_search_type_parameter(retrieve_parameter)
+                # Retry the retrieve request
+                response = agent_client.retrieve(**retrieve_parameter)
+            else:
+                # If other error occurs, raise
+                raise
 
         def extract_source_from_retrieval_result(
             retrieval_result: KnowledgeBaseRetrievalResultTypeDef,

@@ -7,6 +7,7 @@ from app.routes.schemas.bot_kb import (
     type_os_character_filter,
     type_os_token_filter,
     type_os_tokenizer,
+    type_kb_resource_type,
 )
 from typing import Self
 from pydantic import BaseModel, validator, model_validator
@@ -15,6 +16,7 @@ from pydantic import BaseModel, validator, model_validator
 class SearchParamsModel(BaseModel):
     max_results: int
     search_type: type_kb_search_type
+    knowledge_base_resource_type: type_kb_resource_type | None = None
 
 
 class AnalyzerParamsModel(BaseModel):
@@ -58,6 +60,18 @@ class NoneParamsModel(BaseModel):
 class WebCrawlingFiltersModel(BaseModel):
     exclude_patterns: list[str]
     include_patterns: list[str]
+
+
+class KnowledgeBaseConfiguration(BaseModel):
+    type: type_kb_resource_type = "VECTOR"
+
+
+class KnowledgeBase(BaseModel):
+    knowledge_base_configuration: KnowledgeBaseConfiguration
+
+
+class BedrockAgentGetKnowledgeBaseResponse(BaseModel):
+    knowledge_base: KnowledgeBase
 
 
 class BedrockKnowledgeBaseModel(BaseModel):

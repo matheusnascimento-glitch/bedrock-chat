@@ -16,6 +16,7 @@ from app.repositories.common import (
     get_bot_table_client,
     get_dynamodb_client,
 )
+from app.repositories.knowledge_base import get_knowledge_base_info
 from app.repositories.models.custom_bot import (
     ActiveModelsModel,
     AgentModel,
@@ -95,6 +96,19 @@ def store_bot(custom_bot: BotModel):
         # To use sparse index, set `IsStarred` attribute only when it's starred
         item["IsStarred"] = "TRUE"
     if custom_bot.bedrock_knowledge_base:
+        # Use exist_knowledge_base_id if available, otherwise use knowledge_base_id
+        knowledge_base_id = (
+            custom_bot.bedrock_knowledge_base.exist_knowledge_base_id
+            if custom_bot.bedrock_knowledge_base.exist_knowledge_base_id is not None
+            else custom_bot.bedrock_knowledge_base.knowledge_base_id
+        )
+        # Get Knowledge Base from Bedrock Agent API :: get_knowledge_base
+        knowledge_base_info = get_knowledge_base_info(knowledge_base_id=knowledge_base_id)
+        # Get Knowledge Base Type from API Response
+        knowledge_base_type = knowledge_base_info.knowledge_base.knowledge_base_configuration.type
+        # Set Knowledge Base Resource Type
+        custom_bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type = knowledge_base_type
+        # Update Resource Info
         item["BedrockKnowledgeBase"] = custom_bot.bedrock_knowledge_base.model_dump()
     if custom_bot.bedrock_guardrails:
         item["GuardrailsParams"] = custom_bot.bedrock_guardrails.model_dump()

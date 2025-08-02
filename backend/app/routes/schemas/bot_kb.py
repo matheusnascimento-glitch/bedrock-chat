@@ -35,10 +35,15 @@ type_os_token_filter = Literal[
     "icu_folding",
 ]
 
+# Knowledge Base Type
+# Ref: https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_KnowledgeBaseConfiguration.html#bedrock-Type-agent_KnowledgeBaseConfiguration-type
+type_kb_resource_type = Literal["VECTOR", "KENDRA", "SQL"]
+
 
 class SearchParams(BaseSchema):
     max_results: int
     search_type: type_kb_search_type
+    knowledge_base_resource_type: str | None = None
 
 
 class AnalyzerParams(BaseSchema):

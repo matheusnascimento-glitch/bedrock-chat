@@ -12,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 
 def get_knowledge_base_info(
-    knowledge_base_id: str,
+    knowledge_base_id: str | None,
 ) -> BedrockAgentGetKnowledgeBaseResponse:
     client = get_bedrock_agent_client()
     try:

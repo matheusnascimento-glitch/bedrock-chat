@@ -30,8 +30,6 @@ def get_knowledge_base_info(
         logger.error(f"Failed to get knowledge base info: {e}")
         return BedrockAgentGetKnowledgeBaseResponse(
             knowledge_base=KnowledgeBase(
-                knowledge_base_configuration=KnowledgeBaseConfiguration(
-                    type="VECTOR"
-                )
+                knowledge_base_configuration=KnowledgeBaseConfiguration(type="VECTOR")
             )
         )

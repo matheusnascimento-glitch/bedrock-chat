@@ -109,7 +109,10 @@ def _bedrock_knowledge_base_search(bot: BotModel, query: str) -> list[SearchResu
                 del target_parameter["overrideSearchType"]
 
         # Check the knowledge base resource type
-        if bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type == "KENDRA":
+        if (
+            bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type
+            == "KENDRA"
+        ):
             # Omit overrideSearchType option when the type is "KENDRA"
             omit_override_search_type_parameter(retrieve_parameter)
 

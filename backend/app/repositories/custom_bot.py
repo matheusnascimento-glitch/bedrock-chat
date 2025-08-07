@@ -103,11 +103,17 @@ def store_bot(custom_bot: BotModel):
             else custom_bot.bedrock_knowledge_base.knowledge_base_id
         )
         # Get Knowledge Base from Bedrock Agent API :: get_knowledge_base
-        knowledge_base_info = get_knowledge_base_info(knowledge_base_id=knowledge_base_id)
+        knowledge_base_info = get_knowledge_base_info(
+            knowledge_base_id=knowledge_base_id
+        )
         # Get Knowledge Base Type from API Response
-        knowledge_base_type = knowledge_base_info.knowledge_base.knowledge_base_configuration.type
+        knowledge_base_type = (
+            knowledge_base_info.knowledge_base.knowledge_base_configuration.type
+        )
         # Set Knowledge Base Resource Type
-        custom_bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type = knowledge_base_type
+        custom_bot.bedrock_knowledge_base.search_params.knowledge_base_resource_type = (
+            knowledge_base_type
+        )
         # Update Resource Info
         item["BedrockKnowledgeBase"] = custom_bot.bedrock_knowledge_base.model_dump()
     if custom_bot.bedrock_guardrails:

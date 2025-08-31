@@ -16,7 +16,6 @@ from pydantic import BaseModel, validator, model_validator
 class SearchParamsModel(BaseModel):
     max_results: int
     search_type: type_kb_search_type
-    knowledge_base_resource_type: type_kb_resource_type | None = None
 
 
 class AnalyzerParamsModel(BaseModel):

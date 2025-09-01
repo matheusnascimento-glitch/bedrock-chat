@@ -62,7 +62,7 @@ class WebCrawlingFiltersModel(BaseModel):
 
 
 class KnowledgeBaseConfiguration(BaseModel):
-    type: type_kb_resource_type = "VECTOR"
+    type: type_kb_resource_type
 
 
 class KnowledgeBase(BaseModel):

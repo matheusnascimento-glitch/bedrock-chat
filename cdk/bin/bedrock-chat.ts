@@ -96,6 +96,7 @@ const chat = new BedrockChatStack(
     globalAvailableModels: params.globalAvailableModels,
     tokenValidMinutes: params.tokenValidMinutes,
     devAccessIamRoleArn: params.devAccessIamRoleArn,
+    allowedCountries: params.allowedCountries,
   }
 );
 chat.addDependency(waf);

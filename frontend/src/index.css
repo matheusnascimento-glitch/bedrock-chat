@@ -37,3 +37,56 @@
   overflow-wrap: break-word !important;
   max-width: 100% !important;
 }
+
+
+/* Hide the tab list in the chat interface */
+.amplify-tabs__list {
+    display: none !important;
+}
+
+/* Hide the footer in the chat interface */
+.amplify-flex{
+    display: none !important;
+}
+
+/* Hide the divider with label "ou" in the chat interface */
+.amplify-divider[data-label="ou"] {
+    display: none !important;
+}
+
+/* Center all content on the page */
+body {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+}
+
+/* Force show and center Google login button */
+.federated-sign-in-button {
+    display: flex !important;
+    visibility: visible !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+}
+
+/* Force show and center the container of federated buttons */
+.amplify-flex:has(.federated-sign-in-button) {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Remove top margin from header */
+.mb-5.mt-10.flex.justify-center.text-3xl.text-aws-font-color-light {
+    margin-top: 0 !important;
+}
+
+/* Remove all padding from federated sign-in container */
+.federated-sign-in-container {
+    padding: 0 !important;
+}

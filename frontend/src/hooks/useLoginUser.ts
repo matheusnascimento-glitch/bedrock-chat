@@ -2,9 +2,11 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
+
 const GROUP_PUBLISH_ALLOWED = 'PublishAllowed';
 const GROUP_CREATING_BOT_ALLOWED = 'CreatingBotAllowed';
 const GROUP_ADMIN = 'Admin';
+const GROUP_GOOGLE = 'us-east-1_nRDwJRLFo_Google';
 
 const useLoginUser = () => {
   const [isAllowApiSettings, setIsAllowApiSettings] = useState(false);
@@ -35,7 +37,7 @@ const useLoginUser = () => {
       setIsAllowCreatingBot(
         groups.some(
           (group) =>
-            group === GROUP_CREATING_BOT_ALLOWED || group === GROUP_ADMIN
+            group === GROUP_CREATING_BOT_ALLOWED || group === GROUP_ADMIN || group === GROUP_GOOGLE
         )
       );
       setIsAdmin(groups.some((group) => group === GROUP_ADMIN));

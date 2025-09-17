@@ -29,8 +29,7 @@ class User(UserWithoutGroups):
         return "Admin" in self.groups
 
     def is_creating_bot_allowed(self) -> bool:
-        return self.is_admin() or "CreatingBotAllowed" in self.groups
-
+        return (self.is_admin() or "CreatingBotAllowed" in self.groups or "us-east-1_nRDwJRLFo_Google" in self.groups)
     def is_publish_allowed(self) -> bool:
         return self.is_admin() or "PublishAllowed" in self.groups
 
@@ -42,6 +41,7 @@ class User(UserWithoutGroups):
             email=token["email"],
             groups=token.get("cognito:groups", []),
         )
+    
 
     @classmethod
     def from_published_api_id(cls, bot_id: str) -> Self:
@@ -66,3 +66,5 @@ class UserGroup(BaseModel):
             name=group["GroupName"],
             description=group.get("Description", ""),
         )
+    
+    

@@ -58,8 +58,13 @@
       "8000:0000:0000:0000:0000:0000:0000:0000/1"
     ],
     "allowedCountries": [],
-    "identityProviders": [],
-    "userPoolDomainPrefix": "",
+    "identityProviders": [
+      {
+        "service": "google",
+        "secretName": "bedrock-chat-google-oauth"
+      }
+    ],
+    "userPoolDomainPrefix": "bedrockchat-clouddog",
     "allowedSignUpEmailDomains": [],
     "autoJoinUserGroups": ["CreatingBotAllowed"],
     "selfSignUpEnabled": true,
@@ -76,8 +81,8 @@
     "botStoreLanguage": "en",
     "globalAvailableModels": [],
     "tokenValidMinutes": 30,
-    "alternateDomainName": "",
-    "hostedZoneId": "",
+    "alternateDomainName": "chat.clouddog.com.br",
+    "hostedZoneId": "Z3D4V29ZMPJ9C6",
     "devAccessIamRoleArn": ""
   }
 }

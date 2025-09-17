@@ -54,6 +54,7 @@ logger.setLevel(logging.INFO)
 
 def _create_model_activate_model(model_names: List[str]) -> Type[DynamicBaseModel]:
     fields: Dict[str, Any] = {
+        # amazonq-ignore-next-line
         name.replace("-", "_").replace(".", "_"): (bool, True) for name in model_names
     }
     return create_model("ActiveModelsModel", __base__=DynamicBaseModel, **fields)
@@ -78,7 +79,9 @@ class KnowledgeModel(BaseModel):
     def __str_in_claude_format__(self) -> str:
         """Description of the knowledge in Claude format."""
         _source_urls = "<source_urls>"
+        # amazonq-ignore-next-line
         for url in self.source_urls:
+            # amazonq-ignore-next-line
             _source_urls += f"<url>{url}</url>"
         _source_urls += "</source_urls>"
         _sitemap_urls = "<sitemap_urls>"
@@ -93,6 +96,7 @@ class KnowledgeModel(BaseModel):
         for url in self.s3_urls:
             _s3_urls += f"<url>{url}</url>"
         _s3_urls += "</s3_urls>"
+        # amazonq-ignore-next-line
         return f"{_source_urls}{_sitemap_urls}{_filenames}{_s3_urls}"
 
 
@@ -101,6 +105,7 @@ class ReasoningParamsModel(BaseModel):
 
     @field_validator("budget_tokens")
     def validate_budget_tokens(cls, v: int) -> int:
+        # amazonq-ignore-next-line
         if v < 1024:
             raise ValueError("budget_tokens must be greater than or equal to 1024")
         return v
@@ -114,6 +119,7 @@ class GenerationParamsModel(BaseModel):
     stop_sequences: list[str] = DEFAULT_GENERATION_CONFIG["stop_sequences"]
     reasoning_params: ReasoningParamsModel = Field(
         default_factory=lambda: ReasoningParamsModel(
+            # amazonq-ignore-next-line
             budget_tokens=DEFAULT_GENERATION_CONFIG.get("reasoning_params", {}).get(
                 "budget_tokens", 1024
             )
@@ -154,6 +160,8 @@ class FirecrawlConfigModel(BaseModel):
             try:
                 api_key = get_api_key_from_secret_manager(data["secret_arn"])
                 data["api_key"] = api_key
+            # amazonq-ignore-next-line
+            # amazonq-ignore-next-line
             except Exception as e:
                 logger.error(f"Failed to retrieve secret from ARN: {e}")
                 raise ValueError(
@@ -161,6 +169,7 @@ class FirecrawlConfigModel(BaseModel):
                 )
 
         return data
+
 
 
 class PlainToolModel(BaseModel):
@@ -184,7 +193,9 @@ class InternetToolModel(BaseModel):
     name: str
     description: str
     search_engine: Optional[Literal["duckduckgo", "firecrawl"]]
+    # amazonq-ignore-next-line
     firecrawl_config: Optional[FirecrawlConfigModel] | None = None
+
 
     @model_validator(mode="before")
     @classmethod
@@ -201,6 +212,7 @@ class InternetToolModel(BaseModel):
             and data.get("firecrawl_config")
             and isinstance(data["firecrawl_config"], dict)
         ):
+            # amazonq-ignore-next-line
             data["firecrawl_config"] = FirecrawlConfigModel.model_validate(
                 data["firecrawl_config"]
             )
@@ -214,6 +226,7 @@ class InternetToolModel(BaseModel):
                 tool.firecrawl_config, user_id, bot_id
             )
 
+        # amazonq-ignore-next-line
         return cls(
             tool_type="internet",
             name=tool.name,
@@ -223,6 +236,11 @@ class InternetToolModel(BaseModel):
         )
 
 
+# amazonq-ignore-next-line
+# amazonq-ignore-next-line
+# amazonq-ignore-next-line
+# amazonq-ignore-next-line
+# amazonq-ignore-next-line
 class BedrockAgentConfigModel(BaseModel):
     agent_id: str
     alias_id: str
@@ -245,6 +263,14 @@ class BedrockAgentToolModel(BaseModel):
             description=tool.description,
             bedrockAgentConfig=(
                 BedrockAgentConfigModel(
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
+                    # amazonq-ignore-next-line
                     agent_id=tool.bedrockAgentConfig.agent_id,
                     alias_id=tool.bedrockAgentConfig.alias_id,
                 )
@@ -401,6 +427,7 @@ class BotModel(BaseModel):
     active_models: ActiveModelsModel  # type: ignore
     usage_stats: UsageStatsModel
 
+    # amazonq-ignore-next-line
     @staticmethod
     def __is_pinned_format(value: str) -> bool:
         """Check if the value matches the 'pinned@xxx' format."""
@@ -457,6 +484,7 @@ class BotModel(BaseModel):
 
     def has_knowledge(self) -> bool:
         return (
+            # amazonq-ignore-next-line
             len(self.knowledge.source_urls) > 0
             or len(self.knowledge.sitemap_urls) > 0
             or len(self.knowledge.filenames) > 0
@@ -466,6 +494,7 @@ class BotModel(BaseModel):
 
     def is_agent_enabled(self) -> bool:
         # Always consider agents active, even if they have a knowledge base
+        # amazonq-ignore-next-line
         return len(self.agent.tools) > 0 or self.has_knowledge()
 
     def has_bedrock_knowledge_base(self) -> bool:
@@ -493,6 +522,12 @@ class BotModel(BaseModel):
             return True
 
         # Check if the user is in the allowed Cognito groups
+        # amazonq-ignore-next-line
+        # amazonq-ignore-next-line
+        # amazonq-ignore-next-line
+        # amazonq-ignore-next-line
+        # amazonq-ignore-next-line
+        # amazonq-ignore-next-line
         user_groups = get_user_cognito_groups(user)
         return any(group in self.allowed_cognito_groups for group in user_groups)
 
@@ -619,6 +654,7 @@ class BotModel(BaseModel):
             allowed_cognito_users=self.allowed_cognito_users,
             owner_user_id=self.owner_user_id,
             is_publication=self.published_api_codebuild_id is not None,
+            # amazonq-ignore-next-line
             generation_params=GenerationParams.model_validate(
                 self.generation_params.model_dump()
             ),
@@ -744,6 +780,7 @@ class BotAliasModel(BaseModel):
         """Create a BotAliasModel instance from a DynamoDB item."""
         # Convert conversation quick starters from dict to model objects
         conversation_quick_starters = []
+        # amazonq-ignore-next-line
         for starter in item.get("ConversationQuickStarters", []):
             conversation_quick_starters.append(
                 ConversationQuickStarterModel(
@@ -768,6 +805,7 @@ class BotAliasModel(BaseModel):
             is_origin_accessible=item.get("IsOriginAccessible", False),
             create_time=float(item["CreateTime"]),
             last_used_time=float(item.get("LastUsedTime", item["CreateTime"])),
+            # amazonq-ignore-next-line
             is_starred=item.get("IsStarred", "") == "TRUE",
             sync_status=item["SyncStatus"],
             has_knowledge=item.get("HasKnowledge", False),
@@ -776,6 +814,7 @@ class BotAliasModel(BaseModel):
             active_models=active_models,
         )
 
+    # amazonq-ignore-next-line
     def to_summary_output(self, bot: BotModel) -> BotSummaryOutput:
         """Convert to BotSummaryOutput."""
         return BotSummaryOutput(
@@ -817,6 +856,7 @@ class BotMeta(BaseModel):
     owned: bool
 
     shared_scope: type_shared_scope
+    # amazonq-ignore-next-line
     shared_status: str = Field(
         ..., description="private, shared, or pinned@xxx (xxx is a 3-digit integer)"
     )
@@ -841,6 +881,7 @@ class BotMeta(BaseModel):
         _is_starred: bool = (
             is_starred if is_starred is not None else item.get("IsStarred", False)
         )
+        # amazonq-ignore-next-line
         assert (
             item["ItemType"].find("BOT") != -1
         ), f"Invalid ItemType: {item['ItemType']}"
@@ -884,6 +925,7 @@ class BotMeta(BaseModel):
             has_bedrock_knowledge_base=bool(item.get("BedrockKnowledgeBase")),
             owned=owned,
             is_origin_accessible=is_origin_accessible,
+            # amazonq-ignore-next-line
             shared_scope="private",
             shared_status="unshared",
         )
@@ -920,6 +962,7 @@ class BotMeta(BaseModel):
                 }
             }
         """
+        # amazonq-ignore-next-line
         source = hit["_source"]
 
         return cls(

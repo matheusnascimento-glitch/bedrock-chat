@@ -9,6 +9,7 @@ from duckduckgo_search import DDGS
 from firecrawl.firecrawl import FirecrawlApp
 from pydantic import BaseModel, Field, root_validator
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -182,7 +183,6 @@ def _search_with_firecrawl(
     except Exception as e:
         logger.error(f"Error searching with Firecrawl: {e}")
         raise e
-
 
 def _internet_search(
     tool_input: InternetSearchInput, bot: BotModel | None, model: type_model_name | None
